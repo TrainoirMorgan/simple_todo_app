@@ -6,6 +6,8 @@ let textarea = document.getElementById("textarea");
 let msg = document.getElementById("msg");
 let tasks = document.getElementById("tasks");
 let add = document.getElementById("add");
+let isUpdate = false;
+let test;
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -32,11 +34,20 @@ let formValidation = () => {
 let data = [];
 
 let acceptData = () => {
-    data.push({
+    if (isUpdate){
+      data.splice(test,0,{
         text: textInput.value,
         date: dateInput.value,
-        description: textarea.value,        
-    });
+        description: textarea.value,  
+      });
+      isUpdate = false;
+    }else{
+      data.push({
+          text: textInput.value,
+          date: dateInput.value,
+          description: textarea.value,        
+      });
+    }
 
     localStorage.setItem("data", JSON.stringify(data));
 
@@ -91,13 +102,14 @@ deleteAll.addEventListener('click', (e) => {
 
 
 let editTask = (e) => {
-  // let test = e.closest('.task-art').id;
+  test = e.closest('.task-art').id;
   let selectedTask = e.parentElement.parentElement;
   console.log(e);
   textInput.value = selectedTask.children[0].innerHTML;
   dateInput.value = selectedTask.children[1].innerHTML;
   textarea.value = selectedTask.children[2].innerHTML;
-  deleteTask(e);  
+  deleteTask(e);
+  isUpdate = true;  
 };
 
 (() => {
