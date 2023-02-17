@@ -1,5 +1,5 @@
 let form = document.getElementById("form");
-let deleteAll= document.getElementById("deleteAll");
+let deleteAll = document.getElementById("deleteAll");
 let textInput = document.getElementById("textInput");
 let dateInput = document.getElementById("dateInput");
 let textarea = document.getElementById("textarea");
@@ -98,6 +98,12 @@ deleteAll.addEventListener('click', (e) => {
   localStorage.clear();
   data = [];
   createTasks();
+  deleteAll.setAttribute("data-bs-dismiss", "modal");
+  deleteAll.click();
+
+  (() => {
+      deleteAll.setAttribute("data-bs-dismiss", "");
+  })();
 });
 
 
