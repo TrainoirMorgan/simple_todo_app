@@ -1,3 +1,4 @@
+import { createDemonstration } from "./demo.js";
 let form = document.getElementById("form");
 let deleteAll = document.getElementById("deleteAll");
 let textInput = document.getElementById("textInput");
@@ -9,32 +10,23 @@ let add = document.getElementById("add");
 let createDemo = document.getElementById("createDemo");
 let isUpdate = false;
 let test;
-// let demo = {
-//   0 :{'text' : 'task 1',
-//   'date' : '2023-06-12',
-//   'description' : 'Souhaitez un joyeux anniversaire à Morgan'},
-//   1 :{'text' : 'task 2',
-//   'date' : '2023-06-21',
-//   'description' : 'Aller faire la fête pour la fête de la musique'}
-// };
-let demo = [
-  {
-      "text": "task 1",
-      "date": "2023-06-12",
-      "description": "Souhaitez un joyeux anniversaire à Morgan"
-  },
-  {
-      "text": "task 2",
-      "date": "2023-06-21",
-      "description": "Aller faire la fête pour la fête de la musique"
-  },
-  {
-      "text": "123",
-      "date": "",
-      "description": ""
-  }
-]
 
+function sanitizeInput(input) {
+    // Only allow alphanumeric characters, dashes, underscores, periods, @ symbols, and French characters
+    const pattern = /^[a-zA-Z0-9\u00C0-\u00FF\-\.\@\_ ]+$/g;
+    if (pattern.test(input)) {
+        // If the input matches the pattern, remove any extra spaces
+        const sanitizedInput = input.replace(/\s+/g, " ").trim();
+        return sanitizedInput;
+    } else {
+        // If the input contains forbidden characters, replace them with an empty string and remove extra spaces
+        const sanitizedInput = input
+            .replace(/[^a-zA-Z0-9\u00C0-\u00FF\-\.\@\_ ]/g, "")
+            .replace(/\s+/g, " ")
+            .trim();
+        return sanitizedInput;
+    }
+}
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -61,19 +53,19 @@ let formValidation = () => {
 let data = [];
 
 let acceptData = () => {
-    if (isUpdate){
-      data.splice(test,0,{
-        text: textInput.value,
-        date: dateInput.value,
-        description: textarea.value,  
-      });
-      isUpdate = false;
-    }else{
-      data.push({
-          text: textInput.value,
-          date: dateInput.value,
-          description: textarea.value,        
-      });
+    if (isUpdate) {
+        data.splice(test, 0, {
+            text: sanitizeInput(textInput.value),
+            date: sanitizeInput(dateInput.value),
+            description: sanitizeInput(textarea.value),
+        });
+        isUpdate = false;
+    } else {
+        data.push({
+            text: sanitizeInput(textInput.value),
+            date: sanitizeInput(dateInput.value),
+            description: sanitizeInput(textarea.value),
+        });
     }
 
     localStorage.setItem("data", JSON.stringify(data));
@@ -83,9 +75,9 @@ let acceptData = () => {
 };
 
 let createTasks = () => {
-  tasks.innerHTML = "";
-  data.map((x, y) => {
-    return (tasks.innerHTML += `
+    tasks.innerHTML = "";
+    data.map((x, y) => {
+        return (tasks.innerHTML += `
     <div id=${y} class="col-sm-6 col-lg-3 my-2 task-art">
           <article class="bg-black rounded h-100 p-2 d-flex flex-column">
             <div class="fw-bold">${x.text}</div>
@@ -98,65 +90,59 @@ let createTasks = () => {
           </article>
         </div>
     `);
-  });
+    });
 
-  resetForm();
+    resetForm();
 };
 
 let resetForm = () => {
-  textInput.value = "";
-  dateInput.value = "";
-  textarea.value = "";
+    textInput.value = "";
+    dateInput.value = "";
+    textarea.value = "";
 };
-
-createDemo.addEventListener('click', (e) => {
-  // data.splice(0, data.length, ...Object.values(demo));    
-  // data.splice(0,data.length, ...demo);
-  data.push(...demo);
-  localStorage.setItem("data", JSON.stringify(data));
-  createTasks();
-});
 
 let deleteTask = (e) => {
-  // e.parentElement.parentElement.remove();
-  e.closest('.task-art').remove();
-  console.log(e);
+    // e.parentElement.parentElement.remove();
+    e.closest(".task-art").remove();
+    console.log(e);
 
-  data.splice(e.closest('.task-art').id, 1);
+    data.splice(e.closest(".task-art").id, 1);
 
-  localStorage.setItem("data", JSON.stringify(data));
+    localStorage.setItem("data", JSON.stringify(data));
 
-  console.log(data);
+    console.log(data);
 };
 
-deleteAll.addEventListener('click', (e) => {
-  localStorage.clear();
-  data = [];
-  createTasks();
-  deleteAll.setAttribute("data-bs-dismiss", "modal");
-  deleteAll.click();
+deleteAll.addEventListener("click", (e) => {
+    localStorage.clear();
+    data = [];
+    createTasks();
+    deleteAll.setAttribute("data-bs-dismiss", "modal");
+    deleteAll.click();
 
-  (() => {
-      deleteAll.setAttribute("data-bs-dismiss", "");
-  })();
+    (() => {
+        deleteAll.setAttribute("data-bs-dismiss", "");
+    })();
 });
 
-
 let editTask = (e) => {
-  test = e.closest('.task-art').id;
-  let selectedTask = e.parentElement.parentElement;
-  console.log(e);
-  textInput.value = selectedTask.children[0].innerHTML;
-  dateInput.value = selectedTask.children[1].innerHTML;
-  textarea.value = selectedTask.children[2].innerHTML;
-  deleteTask(e);
-  isUpdate = true;  
+    test = e.closest(".task-art").id;
+    let selectedTask = e.parentElement.parentElement;
+    console.log(e);
+    textInput.value = selectedTask.children[0].innerHTML;
+    dateInput.value = selectedTask.children[1].innerHTML;
+    textarea.value = selectedTask.children[2].innerHTML;
+    deleteTask(e);
+    isUpdate = true;
 };
 
-
-
 (() => {
-  data = JSON.parse(localStorage.getItem("data")) || [];
-  console.log(data);
-  createTasks();
+    data = JSON.parse(localStorage.getItem("data")) || [];
+    console.log(data);
+    createTasks();
 })();
+
+createDemo.addEventListener("click", (e) => {
+    createDemonstration(data);
+    createTasks();
+});
