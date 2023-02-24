@@ -6,8 +6,35 @@ let textarea = document.getElementById("textarea");
 let msg = document.getElementById("msg");
 let tasks = document.getElementById("tasks");
 let add = document.getElementById("add");
+let createDemo = document.getElementById("createDemo");
 let isUpdate = false;
 let test;
+// let demo = {
+//   0 :{'text' : 'task 1',
+//   'date' : '2023-06-12',
+//   'description' : 'Souhaitez un joyeux anniversaire à Morgan'},
+//   1 :{'text' : 'task 2',
+//   'date' : '2023-06-21',
+//   'description' : 'Aller faire la fête pour la fête de la musique'}
+// };
+let demo = [
+  {
+      "text": "task 1",
+      "date": "2023-06-12",
+      "description": "Souhaitez un joyeux anniversaire à Morgan"
+  },
+  {
+      "text": "task 2",
+      "date": "2023-06-21",
+      "description": "Aller faire la fête pour la fête de la musique"
+  },
+  {
+      "text": "123",
+      "date": "",
+      "description": ""
+  }
+]
+
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -82,6 +109,14 @@ let resetForm = () => {
   textarea.value = "";
 };
 
+createDemo.addEventListener('click', (e) => {
+  // data.splice(0, data.length, ...Object.values(demo));    
+  // data.splice(0,data.length, ...demo);
+  data.push(...demo);
+  localStorage.setItem("data", JSON.stringify(data));
+  createTasks();
+});
+
 let deleteTask = (e) => {
   // e.parentElement.parentElement.remove();
   e.closest('.task-art').remove();
@@ -117,6 +152,8 @@ let editTask = (e) => {
   deleteTask(e);
   isUpdate = true;  
 };
+
+
 
 (() => {
   data = JSON.parse(localStorage.getItem("data")) || [];
